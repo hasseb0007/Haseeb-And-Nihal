@@ -1,5 +1,6 @@
 /* Edit invitation copy here, then run: node scripts/build.mjs */
 const INVITATION = {
+  "cards": { "barat": "assets/cards/barat-invitation.png", "walima": "assets/cards/walima-invitation.png" },
   "music": { "src": "assets/music.mp3", "volume": 0.35 },
   "links": {
     "house": "https://maps.app.goo.gl/5g76cJrFAUqHd2PT9",
@@ -24,6 +25,8 @@ const INVITATION = {
     }
   ],
   "en": {
+    "downloadBarat": "Download Barat card",
+    "downloadWalima": "Download Walima card",
     "title": "Haseeb & Nihal | 17–18 October 2026",
     "skip": "Skip to celebrations",
     "home": "Back to the beginning",
@@ -115,6 +118,8 @@ const INVITATION = {
     "motionResume": "Resume animation"
   },
   "ur": {
+    "downloadBarat": "بارات کا دعوت نامہ ڈاؤن لوڈ کریں",
+    "downloadWalima": "ولیمے کا دعوت نامہ ڈاؤن لوڈ کریں",
     "title": "حسیب اور نہال | ۱۷–۱۸ اکتوبر ۲۰۲۶",
     "skip": "تقریبات کی تفصیلات",
     "home": "ابتدا پر جائیں",

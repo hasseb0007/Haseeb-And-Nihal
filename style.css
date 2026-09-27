@@ -67,3 +67,9 @@ html[dir=rtl]{--name-direction:-1}
  .name-two{transform:translate3d(0,calc((1 - var(--hero-progress)) * 18px),0)}
  body.motion-paused .name{transform:none}
 }
+
+.card-download{display:flex;align-items:center;justify-content:space-between;gap:18px;width:fit-content;max-width:100%;min-height:46px;margin-top:22px;padding:10px 17px;border:1px solid #dfc39c55;border-radius:3px;background:#07121e66;color:var(--gold);font-size:13px;line-height:1.6;transition:background .2s,border-color .2s}
+.card-download:hover{background:#e4c8a318;border-color:var(--gold)}
+.card-download svg{width:18px;height:18px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.4}
+html[lang=ur] .card-download{font-size:14px;line-height:2.2}
+.quick-event .card-download{margin-top:16px}

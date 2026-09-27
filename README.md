@@ -61,3 +61,7 @@ An empty `src` disables music cleanly. The supplied Rabab Mastana instrumental i
 ## Version history
 
 The original card-like website was committed before the redesign as `8a3ad15` (“Save initial bilingual wedding invitation”). This preserves the original layout and soundtrack for comparison or recovery. The immersive redesign is preserved in commit `9892828`. Subsequent animation corrections remain visible as working-tree changes.
+
+## Downloadable invitation cards
+
+The original supplied PNG cards are in assets/cards/. Download links appear in each event chapter and in the details panel, with English and Urdu labels. The originals are preserved without resizing.
