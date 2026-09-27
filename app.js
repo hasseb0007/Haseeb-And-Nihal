@@ -20,7 +20,7 @@
  let width=innerWidth,height=innerHeight,lastFrame=0,frameId=0,dirty=true;
  let pointer={x:0,y:0},camera={x:0,y:0},metrics={};
  let motes=[],sparks=[],celebrationTimer=null;
- let heroProgress=0,sceneProgress=0;
+ let heroProgress=0,sceneProgress=0,dateRevealed=false;
  const chapters=[...document.querySelectorAll('.chapter')];
  root.classList.add('js');
  function updateLabels(){
@@ -58,13 +58,17 @@
  }
  function updateScene(){
   const y=scrollY;
-  const target=clamp(y/Math.max(metrics.hero.height,1));
+  const target=clamp(y/Math.max(metrics.hero.height*.45,1));
   heroProgress=paused?0:heroProgress+(target-heroProgress)*.13;
   sceneProgress=clamp(y/metrics.total);
   root.style.setProperty('--progress',sceneProgress.toFixed(4));
   root.style.setProperty('--hero-progress',heroProgress.toFixed(4));
   const bridge=clamp((y-metrics.between.top+height*.15)/Math.max(metrics.between.height-height*.7,1));
-  root.style.setProperty('--day-change',bridge.toFixed(4));
+  // Trigger a complete transition, independent of whether scrolling stops.
+  // Reset only after leaving the chapter above, so small scroll reversals cannot interrupt it.
+  if(y>=metrics.between.top-height*.18)dateRevealed=true;
+  else if(y<metrics.between.top-height*.85)dateRevealed=false;
+  root.style.setProperty('--day-change',dateRevealed?'1':'0');
   root.style.setProperty('--warmth',(bridge*.42).toFixed(3));
   const shade=.28+Math.min(target,1)*.29-(bridge*.035);
   root.style.setProperty('--shade',shade.toFixed(3));
@@ -193,7 +197,7 @@
  }
  translate();seedCanvas();applyMotion();
  if(!paused){
-  document.querySelectorAll('.name').forEach((el,i)=>el.animate([{opacity:0,transform:`translateY(${i?60:-60}px)`,filter:'blur(12px)'},{opacity:1,transform:'translateY(0)',filter:'blur(0)'}],{duration:1700,delay:100+i*150,easing:'cubic-bezier(.16,1,.3,1)'}));
+  document.querySelectorAll('.name').forEach((el,i)=>el.animate([{opacity:0,filter:'blur(12px)'},{opacity:1,filter:'blur(0)'}],{duration:1700,delay:100+i*150,easing:'cubic-bezier(.16,1,.3,1)'}));
  }
  document.fonts.ready.then(measure);
 })();

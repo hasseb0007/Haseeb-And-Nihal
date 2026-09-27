@@ -27,3 +27,7 @@ The animation loop is capped at approximately 30 frames per second with bounded 
 ## External state
 
 Google Maps URLs match those supplied by the user; resolved place records have not been independently verified. GitHub Pages publishing still requires a destination account/repository and authentication. No public deployment is claimed.
+
+## Animation corrections
+
+Checkpoint before these fixes: `9892828`. The date handoff is now a timed transition with a discrete target and an offscreen reset threshold. It cannot remain at an intermediate scroll percentage. The names start slightly apart and converge to their resting layout; desktop RTL direction and mobile vertical arrangement are handled separately.

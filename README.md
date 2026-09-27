@@ -48,4 +48,4 @@ The current sound is an original short generative chime sequence implemented in 
 
 ## Version history
 
-The original card-like website was committed before the redesign as `8a3ad15` (“Save initial bilingual wedding invitation”). This preserves the original layout and soundtrack for comparison or recovery. The redesign remains visible as the working-tree changes on top of that checkpoint.
+The original card-like website was committed before the redesign as `8a3ad15` (“Save initial bilingual wedding invitation”). This preserves the original layout and soundtrack for comparison or recovery. The immersive redesign is preserved in commit `9892828`. Subsequent animation corrections remain visible as working-tree changes.
