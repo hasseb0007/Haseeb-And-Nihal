@@ -1,5 +1,6 @@
 /* Edit invitation copy here, then run: node scripts/build.mjs */
 const INVITATION = {
+  "music": { "src": "assets/music.mp3", "volume": 0.35 },
   "links": {
     "house": "https://maps.app.goo.gl/5g76cJrFAUqHd2PT9",
     "barat": "https://maps.app.goo.gl/W2z7azZKRxYJJkMm8",

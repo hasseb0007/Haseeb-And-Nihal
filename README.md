@@ -22,9 +22,9 @@ Presentation lives in style.css; motion, language, sound and interactions live i
 - Desktop event stages can be selected directly; smaller screens show the complete schedule in natural document flow.
 - A keyboard-accessible details dialog provides all times, directions and RSVP contacts without following the entire story. Escape closes it and restores focus.
 - A guest-triggered sparkle interaction. It does not send, store or collect anything.
-- Optional original major-pentatonic chimes synthesized with Web Audio. Sound is off until a guest requests it, and switches off when the page is hidden. No audio download or recorded music.
+- Optional local MP3 playback. Sound is off until a guest requests it and pauses when the page is hidden. The sound button stays hidden until a music file is configured.
 - English/Urdu switching with local preference storage, right-to-left layout, locally hosted Nastaliq font, and isolated phone numbers.
-- Motion-off control with saved preference. Operating-system reduced-motion preference disables decorative motion, particles and pinned stages. The entire event schedule becomes a normal static document.
+- Operating-system reduced-motion preference disables decorative motion, particles and pinned stages. The separate animation-pause button has been removed. The entire event schedule becomes a normal static document.
 - Complete English fallback when JavaScript is blocked. Controls needing JavaScript are hidden.
 - Native scrolling. No wheel interception, scroll hijacking, intro gate or loading animation.
 
@@ -44,7 +44,19 @@ The original garden artwork was created for this invitation with built-in ImageG
 
 Cormorant Garamond and Noto Nastaliq Urdu are distributed under the SIL Open Font License. Their license files are included in assets.
 
-The current sound is an original short generative chime sequence implemented in app.js. The previous recorded soundtrack was removed.
+## Add your own MP3
+
+1. Copy your MP3 into `assets/` and name it `music.mp3` (lowercase).
+2. At the top of `content.js`, change the music settings to:
+
+```js
+"music": { "src": "assets/music.mp3", "volume": 0.35 },
+```
+
+3. Reload the preview. The sound button appears and starts your file when tapped. It loops automatically. Change `volume` between 0 and 1 if desired.
+4. Commit and push both `content.js` and `assets/music.mp3` to update GitHub Pages. No changes to app.js are needed. To change songs later, replace `assets/music.mp3` with the new file.
+
+An empty `src` disables music cleanly. The supplied Rabab Mastana instrumental is installed as assets/music.mp3. The earlier synthesized chimes have been removed.
 
 ## Version history
 

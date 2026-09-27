@@ -3,7 +3,6 @@
  const root=document.documentElement,body=document.body;
  const language=document.querySelector('#language');
  const sound=document.querySelector('#sound');
- const motion=document.querySelector('#motion');
  const dialog=document.querySelector('#details-dialog');
  const celebrate=document.querySelector('#celebrate');
  const canvas=document.querySelector('#stardust');
@@ -13,10 +12,16 @@
  const stored=key=>{try{return localStorage.getItem(key);}catch{return null;}};
  const save=(key,value)=>{try{localStorage.setItem(key,value);}catch{}};
  let lang=stored('invitation-language')==='ur'?'ur':'en';
- let userPaused=stored('invitation-motion')==='paused';
- let paused=reduced.matches||userPaused;
+ let paused=reduced.matches;
  let soundBusy=false;
- let soundOn=false,audioContext=null,audioMaster=null,soundTimer=null,noteIndex=0;
+ let soundOn=false;
+ const music=INVITATION.music||{};
+ const audio=new Audio();
+ audio.preload='none';audio.loop=true;
+ audio.volume=clamp(Number.isFinite(music.volume)?music.volume:.35);
+ if(music.src)audio.src=music.src;
+ audio.addEventListener('pause',()=>{soundOn=false;updateLabels();});
+ audio.addEventListener('error',()=>{soundOn=false;updateLabels();document.querySelector('#audio-status').textContent=INVITATION[lang].audioError;});
  let width=innerWidth,height=innerHeight,lastFrame=0,frameId=0,dirty=true;
  let pointer={x:0,y:0},camera={x:0,y:0},metrics={};
  let motes=[],sparks=[],celebrationTimer=null;
@@ -28,10 +33,6 @@
   sound.setAttribute('aria-label',copy[soundOn?'pause':'play']);
   sound.setAttribute('aria-pressed',String(soundOn));
   sound.querySelector('[data-sound-label]').textContent=copy[soundOn?'pause':'play'];
-  motion.setAttribute('aria-label',copy[paused?'motionResume':'motion']);
-  motion.setAttribute('aria-pressed',String(paused));
-  motion.querySelector('[data-motion-label]').textContent=copy[paused?'motionResume':'motion'];
-  motion.querySelector('[data-motion-icon]').textContent=paused?'▷':'Ⅱ';
  }
  function translate(){
   const copy=INVITATION[lang];
@@ -121,43 +122,25 @@
   if(!paused)requestFrame();
  }
  function applyMotion(){
-  paused=reduced.matches||userPaused;
-  motion.hidden=reduced.matches;
+  paused=reduced.matches;
   body.classList.toggle('motion-paused',paused);
   if(paused){document.getAnimations().forEach(a=>a.cancel());sparks=[];if(ctx)ctx.clearRect(0,0,width,height);}
   updateLabels();measure();
  }
- function chime(freq,delay=0){
-  if(!audioContext||!soundOn)return;
-  const start=audioContext.currentTime+delay;
-  const gain=audioContext.createGain(),osc=audioContext.createOscillator(),harmonic=audioContext.createOscillator(),soft=audioContext.createGain();
-  gain.gain.setValueAtTime(0,start);gain.gain.linearRampToValueAtTime(.17,start+.025);gain.gain.exponentialRampToValueAtTime(.0001,start+3.5);
-  osc.type='sine';osc.frequency.value=freq;harmonic.type='sine';harmonic.frequency.value=freq*2;soft.gain.value=.13;
-  osc.connect(gain);harmonic.connect(soft);soft.connect(gain);gain.connect(audioMaster);
-  osc.start(start);harmonic.start(start);osc.stop(start+3.6);harmonic.stop(start+3.6);
-  osc.onended=()=>{osc.disconnect();harmonic.disconnect();soft.disconnect();gain.disconnect();};
- }
- function phrase(){
-  if(!soundOn)return;
-  // Original sparse major-pentatonic chimes. No recordings or external audio.
-  const melody=[523.25,659.25,783.99,587.33,880,783.99,659.25,587.33];
-  chime(melody[noteIndex++%melody.length]);
-  soundTimer=setTimeout(phrase,4200);
- }
  async function setSound(enabled){
-  if(!enabled){soundOn=false;clearTimeout(soundTimer);if(audioContext)await audioContext.suspend();updateLabels();return;}
+  if(!enabled){audio.pause();soundOn=false;updateLabels();return;}
+  if(!music.src)return;
   try{
-   const Audio=window.AudioContext||window.webkitAudioContext;
-   if(!Audio)throw Error('No Web Audio');
-   if(!audioContext){audioContext=new Audio();audioMaster=audioContext.createGain();audioMaster.gain.value=.23;audioMaster.connect(audioContext.destination);}
-   await audioContext.resume();soundOn=true;updateLabels();phrase();
+   document.querySelector('#audio-status').textContent='';
+   await audio.play();
+   if(document.hidden){audio.pause();return;}
+   soundOn=true;updateLabels();
   }catch{soundOn=false;updateLabels();document.querySelector('#audio-status').textContent=INVITATION[lang].audioError;}
  }
  function burst(){
   const status=document.querySelector('#celebration-status');status.textContent=INVITATION[lang].celebrated;
   const group=document.querySelector('.celebration');group.classList.add('bloomed');
   clearTimeout(celebrationTimer);celebrationTimer=setTimeout(()=>group.classList.remove('bloomed'),1800);
-  if(soundOn){chime(523.25);chime(659.25,.16);chime(783.99,.32);chime(1046.5,.55);}
   if(paused)return;
   const rect=celebrate.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
   for(let i=0;i<(width<600?100:160);i++){
@@ -166,7 +149,7 @@
   }
   sparks=sparks.slice(-400);requestFrame();
  }
- language.hidden=false;sound.hidden=false;motion.hidden=false;celebrate.hidden=false;
+ language.hidden=false;sound.hidden=!music.src;celebrate.hidden=false;
  document.querySelectorAll('[data-open-details]').forEach(button=>{
   button.hidden=false;button.addEventListener('click',()=>{dialog.showModal();body.classList.add('dialog-open');});
  });
@@ -184,7 +167,6 @@
  dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
  language.addEventListener('click',()=>{lang=lang==='en'?'ur':'en';translate();save('invitation-language',lang);});
  sound.addEventListener('click',async()=>{if(soundBusy)return;soundBusy=true;try{await setSound(!soundOn);}finally{soundBusy=false;}});
- motion.addEventListener('click',()=>{if(reduced.matches){userPaused=true;}else{userPaused=!userPaused;}save('invitation-motion',userPaused?'paused':'playing');applyMotion();});
  reduced.addEventListener('change',applyMotion);
  celebrate.addEventListener('click',burst);
  addEventListener('scroll',()=>{dirty=true;requestFrame();},{passive:true});

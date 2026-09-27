@@ -31,3 +31,7 @@ Google Maps URLs match those supplied by the user; resolved place records have n
 ## Animation corrections
 
 Checkpoint before these fixes: `9892828`. The date handoff is now a timed transition with a discrete target and an offscreen reset threshold. It cannot remain at an intermediate scroll percentage. The names start slightly apart and converge to their resting layout; desktop RTL direction and mobile vertical arrangement are handled separately.
+
+## Custom music update
+
+Removed the separate animation-pause control and generated chimes. MP3 source and volume are configured in content.js. The supplied Rabab Mastana MP3 is installed as assets/music.mp3. Browser playback and sound-off controls verified without errors. Reduced-motion OS preferences remain supported.
