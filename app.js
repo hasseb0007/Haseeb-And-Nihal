@@ -15,9 +15,10 @@
  let paused=reduced.matches;
  let soundBusy=false;
  let soundOn=false;
+ let autoStartPending=true;
  const music=INVITATION.music||{};
  const audio=new Audio();
- audio.preload='none';audio.loop=true;
+ audio.preload='auto';audio.loop=true;
  audio.volume=clamp(Number.isFinite(music.volume)?music.volume:.35);
  if(music.src)audio.src=music.src;
  audio.addEventListener('pause',()=>{soundOn=false;updateLabels();});
@@ -127,6 +128,20 @@
   if(paused){document.getAnimations().forEach(a=>a.cancel());sparks=[];if(ctx)ctx.clearRect(0,0,width,height);}
   updateLabels();measure();
  }
+ function finishAutoStart(){
+  autoStartPending=false;
+  document.removeEventListener('click',startOnInteraction);
+  document.removeEventListener('keydown',startOnInteraction);
+ }
+ async function tryAutoStart(){
+  if(!autoStartPending||!music.src||document.hidden||soundBusy)return;
+  soundBusy=true;
+  try{await setSound(true);}finally{soundBusy=false;}
+ }
+ function startOnInteraction(event){
+  if(!event.isTrusted||sound.contains(event.target)||event.metaKey||event.ctrlKey||event.altKey)return;
+  void tryAutoStart();
+ }
  async function setSound(enabled){
   if(!enabled){audio.pause();soundOn=false;updateLabels();return;}
   if(!music.src)return;
@@ -134,8 +149,8 @@
    document.querySelector('#audio-status').textContent='';
    await audio.play();
    if(document.hidden){audio.pause();return;}
-   soundOn=true;updateLabels();
-  }catch{soundOn=false;updateLabels();document.querySelector('#audio-status').textContent=INVITATION[lang].audioError;}
+   soundOn=true;finishAutoStart();updateLabels();
+  }catch(error){soundOn=false;updateLabels();if(error.name!=='NotAllowedError')document.querySelector('#audio-status').textContent=INVITATION[lang].audioError;}
  }
  function burst(){
   const status=document.querySelector('#celebration-status');status.textContent=INVITATION[lang].celebrated;
@@ -166,13 +181,13 @@
  dialog.addEventListener('close',()=>{body.classList.remove('dialog-open');measure();});
  dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
  language.addEventListener('click',()=>{lang=lang==='en'?'ur':'en';translate();save('invitation-language',lang);});
- sound.addEventListener('click',async()=>{if(soundBusy)return;soundBusy=true;try{await setSound(!soundOn);}finally{soundBusy=false;}});
+ sound.addEventListener('click',async()=>{finishAutoStart();if(soundBusy)return;soundBusy=true;try{await setSound(!soundOn);}finally{soundBusy=false;}});
  reduced.addEventListener('change',applyMotion);
  celebrate.addEventListener('click',burst);
  addEventListener('scroll',()=>{dirty=true;requestFrame();},{passive:true});
  addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&!paused){pointer.x=(e.clientX/width-.5)*2;pointer.y=(e.clientY/height-.5)*2;}},{passive:true});
  addEventListener('resize',()=>{measure();seedCanvas();},{passive:true});
- document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frameId);frameId=0;if(soundOn)setSound(false);}else{lastFrame=performance.now();measure();}});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frameId);frameId=0;if(soundOn)setSound(false);}else{lastFrame=performance.now();measure();void tryAutoStart();}});
  if('IntersectionObserver' in window){
   const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){if(!paused&&(!entry.target.classList.contains('event-step')||width<=900||height<820))entry.target.animate([{opacity:.2,transform:'translateY(40px)',filter:'blur(4px)'},{opacity:1,transform:'translateY(0)',filter:'blur(0)'}],{duration:1100,easing:'cubic-bezier(.16,1,.3,1)'});observer.unobserve(entry.target);}}),{threshold:.16});
   document.querySelectorAll('.reveal,.chapter-heading,.contact,.event-step').forEach(el=>observer.observe(el));
@@ -182,4 +197,7 @@
   document.querySelectorAll('.name').forEach((el,i)=>el.animate([{opacity:0,filter:'blur(12px)'},{opacity:1,filter:'blur(0)'}],{duration:1700,delay:100+i*150,easing:'cubic-bezier(.16,1,.3,1)'}));
  }
  document.fonts.ready.then(measure);
+ document.addEventListener('click',startOnInteraction);
+ document.addEventListener('keydown',startOnInteraction);
+ void tryAutoStart();
 })();

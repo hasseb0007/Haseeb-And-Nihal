@@ -35,3 +35,7 @@ Checkpoint before these fixes: `9892828`. The date handoff is now a timed transi
 ## Custom music update
 
 Removed the separate animation-pause control and generated chimes. MP3 source and volume are configured in content.js. The supplied Rabab Mastana MP3 is installed as assets/music.mp3. Browser playback and sound-off controls verified without errors. Reduced-motion OS preferences remain supported.
+
+## Autoplay update
+
+Attempts MP3 playback on opening; NotAllowedError arms first-interaction fallback without an error announcement. Explicit sound-control use cancels that fallback. Browser autoplay policy still determines whether sound can begin before interaction.

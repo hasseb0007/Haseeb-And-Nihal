@@ -22,7 +22,7 @@ Presentation lives in style.css; motion, language, sound and interactions live i
 - Desktop event stages can be selected directly; smaller screens show the complete schedule in natural document flow.
 - A keyboard-accessible details dialog provides all times, directions and RSVP contacts without following the entire story. Escape closes it and restores focus.
 - A guest-triggered sparkle interaction. It does not send, store or collect anything.
-- Optional local MP3 playback. Sound is off until a guest requests it and pauses when the page is hidden. The sound button stays hidden until a music file is configured.
+- Optional local MP3 playback. Playback is attempted on opening. If the browser blocks audible autoplay, it retries on the first tap/click or keypress. The sound control can turn it off; it will not restart after the guest does so. Playback pauses when the page is hidden. The sound button stays hidden until a music file is configured.
 - English/Urdu switching with local preference storage, right-to-left layout, locally hosted Nastaliq font, and isolated phone numbers.
 - Operating-system reduced-motion preference disables decorative motion, particles and pinned stages. The separate animation-pause button has been removed. The entire event schedule becomes a normal static document.
 - Complete English fallback when JavaScript is blocked. Controls needing JavaScript are hidden.
@@ -53,7 +53,7 @@ Cormorant Garamond and Noto Nastaliq Urdu are distributed under the SIL Open Fon
 "music": { "src": "assets/music.mp3", "volume": 0.35 },
 ```
 
-3. Reload the preview. The sound button appears and starts your file when tapped. It loops automatically. Change `volume` between 0 and 1 if desired.
+3. Reload the preview. The sound button appears and attempts to start your file immediately, falling back to the first interaction if blocked. It loops automatically. Change `volume` between 0 and 1 if desired.
 4. Commit and push both `content.js` and `assets/music.mp3` to update GitHub Pages. No changes to app.js are needed. To change songs later, replace `assets/music.mp3` with the new file.
 
 An empty `src` disables music cleanly. The supplied Rabab Mastana instrumental is installed as assets/music.mp3. The earlier synthesized chimes have been removed.
